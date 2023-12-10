@@ -221,3 +221,18 @@ img.pull-left { margin-right: 10px; }
 
 	.widget-simplenav { margin-left:-5px; }		
 	.widget-simplenav a{ margin:0 5px; }		
+	/* Add this CSS to your stylesheet or in a style tag in the head of your HTML document */
+
+.delete-button {
+    background-color: #e74c3c; /* Red color */
+    color: #fff; /* White text color */
+    padding: 8px 12px; /* Adjust padding as needed */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Add a smooth transition effect */
+}
+
+.delete-button:hover {
+    background-color: #c0392b; /* Darker red color on hover */
+}
