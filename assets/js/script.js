@@ -1,4 +1,8 @@
 // Tableau pour stocker les événements
+function redirectToModifyPage(eventId) {
+  // Utilisez window.location.href pour rediriger vers la page modify.html avec l'ID dans l'URL
+  window.location.href = `Modif.html?id=${eventId}`;
+}
 var events = [
   {
     id: 1,
@@ -56,7 +60,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 <p>${carte.contenu}</p>
  
  
- 
+               <button class="modify-button"  data-card-id="${carte.id}" onclick="redirectToModifyPage(${carte.id})" >Modify</button>
+
               <button class="delete-button" data-card-id="${carte.id}">Delete</button>
             `;
 
@@ -69,7 +74,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // Clear existing cards
     cartesContainer.innerHTML = "";
   }
+  const urlParams = new URLSearchParams(window.location.search);
+  const eventId = urlParams.get("id");
 
+  // Appelez votre fonction d'édition avec l'ID récupéré
+  editCard(eventId);
   function deleteCard(cardId) {
     const indexToDelete = events.findIndex((carte) => carte.id === cardId);
 
@@ -89,7 +98,13 @@ document.addEventListener("DOMContentLoaded", function () {
       deleteCard(cardId);
     }
   });
-
+  // Event listener for delete buttons
+  cartesContainer.addEventListener("click", function (event) {
+    if (event.target.classList.contains("modify-button")) {
+      const cardId = parseInt(event.target.dataset.cardId);
+      editCard(cardId);
+    }
+  });
   genererArticle();
 });
 
@@ -139,7 +154,7 @@ article.appendChild(carteWrapper);
 carteElement.innerHTML = `
     <h2>${carte.titre}</h2>
     <p>${carte.contenu}</p>
-    <button class="edit-button" data-card-id="${carte.id}">Edit</button>
+    <button class="modify-button" data-card-id="${carte.id}">Modify</button>
     <button class="delete-button" data-card-id="${carte.id}">Delete</button>
 `;
 
@@ -149,33 +164,46 @@ function editCard(cardId) {
   const indexToEdit = events.findIndex((carte) => carte.id === cardId);
 
   if (indexToEdit !== -1) {
-    // Get the existing event data
     const existingEvent = events[indexToEdit];
 
-    // Use the event data to populate the edit form (assuming you have an edit form)
-    document.getElementById("eventName").value = existingEvent.name;
-    document.getElementById("eventDate").value = existingEvent.date;
-    document.getElementById("photo").value = existingEvent.photo;
-    document.getElementById("eventDescription").value =
-      existingEvent.description;
+    // Vérifiez si les éléments existent avant de définir leurs valeurs
+    const eventNameInput = document.getElementById("eventName");
+    const eventDateInput = document.getElementById("eventDate");
+    const photoInput = document.getElementById("photo");
+    const eventDescriptionInput = document.getElementById("eventDescription");
 
-    // Remove the existing event from the array
-    events.splice(indexToEdit, 1);
+    if (
+      eventNameInput &&
+      eventDateInput &&
+      photoInput &&
+      eventDescriptionInput
+    ) {
+      eventNameInput.value = existingEvent.titre; // utilisez existingEvent.titre au lieu de existingEvent.name
+      eventDateInput.value = existingEvent.date;
+      photoInput.value = existingEvent.image;
+      eventDescriptionInput.value = existingEvent.contenu;
 
-    // Update the display after deletion
-    genererCartes();
-    genererArticle();
+      // Supprimez l'événement existant du tableau
+      events.splice(indexToEdit, 1);
+
+      // Mettez à jour l'affichage après la suppression
+      genererCartes();
+      genererArticle();
+    } else {
+      console.error("One or more input elements not found.");
+    }
   } else {
     console.log(`Card with ID ${cardId} not found.`);
   }
 }
+
 // Event listener for delete and edit buttons
 cartesContainer.addEventListener("click", function (event) {
-  const cardId = parseInt(event.target.dataset.cardId);
-
   if (event.target.classList.contains("delete-button")) {
+    const cardId = parseInt(event.target.dataset.cardId);
     deleteCard(cardId);
-  } else if (event.target.classList.contains("edit-button")) {
+  } else if (event.target.classList.contains("modify-button")) {
+    const cardId = parseInt(event.target.dataset.cardId);
     editCard(cardId);
   }
 });
